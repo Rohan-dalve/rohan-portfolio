@@ -85,6 +85,13 @@ main {
     -webkit-backdrop-filter: blur(18px);
 }
 
+.error-card {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2.4rem;
+    text-align: center;
+}
+
 .section-heading {
     max-width: 720px;
     margin-bottom: 2rem;
@@ -602,6 +609,7 @@ main {
     min-height: 180px;
     display: grid;
     gap: 1rem;
+    height: 100%;
 }
 
 /* Certifications card grid */
@@ -618,6 +626,7 @@ main {
     gap: 0.75rem;
     padding: 1rem;
     min-height: 340px;
+    height: 100%;
 }
 
 .certification-card__media {
@@ -891,6 +900,7 @@ main {
     gap: 1.4rem;
     padding: 2rem;
     border-radius: var(--radius-md);
+    height: 100%;
     transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 

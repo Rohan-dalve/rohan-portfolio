@@ -70,7 +70,8 @@ function enableMobileNav() {
     }
 
     navToggle.addEventListener("click", () => {
-        navMenu.classList.toggle("open");
+        const isOpen = navMenu.classList.toggle("open");
+        navToggle.setAttribute("aria-expanded", String(isOpen));
     });
 
     navMenu.querySelectorAll("a").forEach((link) => {

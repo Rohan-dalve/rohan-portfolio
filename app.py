@@ -7,7 +7,8 @@ from datetime import datetime
 from functools import wraps
 from pathlib import Path
 
-from flask import Flask, flash, g, redirect, render_template, request, session, url_for
+from flask import Flask, Response, flash, g, redirect, render_template, request, session, url_for
+from werkzeug.exceptions import HTTPException
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
@@ -22,15 +23,33 @@ ACHIEVEMENT_IMAGE_DIR = IMAGE_DIR / "achievements"
 DATABASE_PATH = BASE_DIR / "database.db"
 CONTACTS_FILE = DATA_DIR / "contacts.csv"
 ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "webp", "gif"}
+MAX_UPLOAD_SIZE = 5 * 1024 * 1024
+IS_PRODUCTION = os.environ.get("FLASK_ENV") == "production" or os.environ.get("RENDER") == "true" or os.environ.get("ENVIRONMENT") == "production"
 
 app = Flask(__name__)
+app.config["DEBUG"] = not IS_PRODUCTION
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "portfolio-dev-secret")
 app.config["DATABASE"] = DATABASE_PATH
 app.config["UPLOAD_FOLDER"] = PROJECT_IMAGE_DIR
-app.config["ADMIN_USERNAME"] = os.environ.get("ADMIN_USERNAME", "Rohan")
-app.config["ADMIN_PASSWORD_HASH"] = generate_password_hash(
-    os.environ.get("ADMIN_PASSWORD", "Rohan@2005")
-)
+app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_SIZE
+app.config["PREFERRED_URL_SCHEME"] = "https" if IS_PRODUCTION else "http"
+app.config["SESSION_COOKIE_SECURE"] = IS_PRODUCTION
+app.config["TEMPLATES_AUTO_RELOAD"] = not IS_PRODUCTION
+
+if IS_PRODUCTION:
+    secret_key = os.environ.get("SECRET_KEY")
+    admin_username = os.environ.get("ADMIN_USERNAME")
+    admin_password = os.environ.get("ADMIN_PASSWORD")
+    if not secret_key or not admin_username or not admin_password:
+        raise RuntimeError("Production requires SECRET_KEY, ADMIN_USERNAME, and ADMIN_PASSWORD environment variables.")
+    app.config["SECRET_KEY"] = secret_key
+    app.config["ADMIN_USERNAME"] = admin_username
+    app.config["ADMIN_PASSWORD_HASH"] = generate_password_hash(admin_password)
+else:
+    app.config["ADMIN_USERNAME"] = os.environ.get("ADMIN_USERNAME", "Rohan")
+    app.config["ADMIN_PASSWORD_HASH"] = generate_password_hash(
+        os.environ.get("ADMIN_PASSWORD", "Rohan@2005")
+    )
 
 DEFAULT_SETTINGS = {
     "name": "Rohan Dalve",
@@ -170,10 +189,29 @@ def allowed_image(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_IMAGE_EXTENSIONS
 
 
-def save_uploaded_project_image(uploaded_file) -> str | None:
+def validate_uploaded_image(uploaded_file, max_size: int = MAX_UPLOAD_SIZE) -> bool:
     if not uploaded_file or not uploaded_file.filename:
-        return None
+        return False
     if not allowed_image(uploaded_file.filename):
+        return False
+    if uploaded_file.mimetype and uploaded_file.mimetype.split("/", 1)[0] != "image":
+        return False
+
+    if uploaded_file.content_length and uploaded_file.content_length > max_size:
+        return False
+
+    try:
+        uploaded_file.stream.seek(0, os.SEEK_END)
+        file_size = uploaded_file.stream.tell()
+        uploaded_file.stream.seek(0)
+    except Exception:
+        return False
+
+    return file_size <= max_size
+
+
+def save_uploaded_project_image(uploaded_file) -> str | None:
+    if not validate_uploaded_image(uploaded_file):
         return None
 
     safe_name = secure_filename(uploaded_file.filename)
@@ -185,9 +223,7 @@ def save_uploaded_project_image(uploaded_file) -> str | None:
 
 
 def save_profile_image(uploaded_file) -> bool:
-    if not uploaded_file or not uploaded_file.filename:
-        return False
-    if not allowed_image(uploaded_file.filename):
+    if not validate_uploaded_image(uploaded_file):
         return False
 
     uploaded_file.save(IMAGE_DIR / "profile.jpg")
@@ -203,6 +239,25 @@ def admin_required(view_func):
         return view_func(*args, **kwargs)
 
     return wrapped_view
+
+
+@app.errorhandler(404)
+def not_found(error: HTTPException):
+    return render_template("404.html", error=error), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    return render_template("500.html", error=error), 500
+
+
+@app.errorhandler(Exception)
+def handle_unexpected_error(error):
+    if isinstance(error, HTTPException):
+        return not_found(error)
+    if app.debug:
+        raise error
+    return render_template("500.html", error=error), 500
 
 
 def init_database() -> None:
@@ -541,9 +596,43 @@ def inject_globals():
     return {"site": site, "current_year": datetime.now().year}
 
 
+@app.get("/robots.txt")
+def robots_txt():
+    content = "User-agent: *\nAllow: /\nSitemap: " + request.url_root.rstrip("/") + "/sitemap.xml\n"
+    return Response(content, mimetype="text/plain")
+
+
+@app.get("/sitemap.xml")
+def sitemap_xml():
+    base_url = request.url_root.rstrip("/")
+    urls = [
+        ("/", "1.00", "weekly"),
+        ("/#about", "0.90", "monthly"),
+        ("/#experience", "0.90", "monthly"),
+        ("/#projects", "0.95", "weekly"),
+        ("/#certifications", "0.90", "monthly"),
+        ("/#contact", "0.85", "monthly"),
+    ]
+    xml_lines = ["<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"]
+    for path, priority, changefreq in urls:
+        xml_lines.append(
+            f"<url><loc>{base_url}{path}</loc><changefreq>{changefreq}</changefreq><priority>{priority}</priority></url>"
+        )
+    xml_lines.append("</urlset>")
+    return Response("\n".join(xml_lines), mimetype="application/xml")
+
+
 @app.route("/")
 def home():
-    return render_template("index.html", portfolio=get_portfolio_content())
+    return render_template(
+        "index.html",
+        portfolio=get_portfolio_content(),
+        page_title=f"{DEFAULT_SETTINGS['name']} | {DEFAULT_SETTINGS['role']}",
+        page_description=(
+            f"{DEFAULT_SETTINGS['name']} is a {DEFAULT_SETTINGS['role']} based in {DEFAULT_SETTINGS['location']}. "
+            "Explore analytics projects, certifications, and professional experience."
+        ),
+    )
 
 
 @app.route("/admin", methods=["GET", "POST"])
@@ -1404,4 +1493,4 @@ with app.app_context():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=app.config["DEBUG"])

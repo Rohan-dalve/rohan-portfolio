@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found | {{ site.name }}{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="glass error-card">
+            <span class="section-tag">404</span>
+            <h1>Page not found</h1>
+            <p>The page you requested could not be found. It may have moved or no longer exist.</p>
+            <a class="btn btn-primary" href="{{ url_for('home') }}">Return home</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

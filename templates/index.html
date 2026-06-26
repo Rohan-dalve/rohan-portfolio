@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="hero section" id="hero">
+<section class="hero section" id="hero" aria-labelledby="hero-heading">
     <div class="container hero-layout">
         <div class="hero-copy reveal">
             <span class="eyebrow">Open to data analytics and machine learning opportunities</span>
             {% if session.get('admin_logged_in') %}
             <a class="section-edit-link" href="{{ url_for('dashboard') }}#settings-manager">Edit Hero Content</a>
             {% endif %}
-            <h1>{{ portfolio.site.name }}</h1>
+            <h1 id="hero-heading">{{ portfolio.site.name }}</h1>
             <p class="hero-lead">{{ portfolio.site.role }}</p>
             <p class="hero-text">{{ portfolio.site.tagline }}</p>
 
@@ -51,6 +51,7 @@
                     src="{{ url_for('static', filename='images/profile.jpg') }}"
                     alt="{{ portfolio.site.name }} profile photo"
                     loading="eager"
+                    decoding="async"
                     onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/profile-placeholder.svg') }}';"
                 >
                 <div class="hero-card">
@@ -65,11 +66,11 @@
     </div>
 </section>
 
-<section class="section" id="about">
+<section class="section" id="about" aria-labelledby="about-heading">
     <div class="container">
         <div class="section-heading reveal">
             <span class="section-tag">About</span>
-            <h2>Professional Summary</h2>
+            <h2 id="about-heading">Professional Summary</h2>
             <p></p>
             {% if session.get('admin_logged_in') %}
             <a class="section-edit-link" href="{{ url_for('dashboard') }}#about-manager">Edit This Section</a>
@@ -107,11 +108,11 @@
     </div>
 </section>
 
-<section class="section" id="what-i-do">
+<section class="section" id="what-i-do" aria-labelledby="services-heading">
     <div class="container">
         <div class="section-heading reveal">
             <span class="section-tag">What I Do</span>
-            <h2>How I deliver value</h2>
+            <h2 id="services-heading">How I deliver value</h2>
             <p></p>
             {% if session.get('admin_logged_in') %}
             <a class="section-edit-link" href="{{ url_for('dashboard') }}#services-manager">Edit This Section</a>
@@ -129,11 +130,11 @@
     </div>
 </section>
 
-<section class="section" id="skills">
+<section class="section" id="skills" aria-labelledby="skills-heading">
     <div class="container">
         <div class="section-heading reveal">
             <span class="section-tag">Skills</span>
-            <h2>Technical Capabilities</h2>
+            <h2 id="skills-heading">Technical Capabilities</h2>
             <p></p>
             {% if session.get('admin_logged_in') %}
             <a class="section-edit-link" href="{{ url_for('dashboard') }}#skills-manager">Edit This Section</a>
@@ -172,11 +173,11 @@
     </div>
 </section>
 
-<section class="section" id="experience">
+<section class="section" id="experience" aria-labelledby="experience-heading">
     <div class="container">
         <div class="section-heading reveal">
             <span class="section-tag">Experience</span>
-            <h2>Professional Experience</h2>
+            <h2 id="experience-heading">Professional Experience</h2>
             <p>Organizations, responsibilities, and measurable contributions across analytics and data-driven projects.</p>
         </div>
 
@@ -184,12 +185,14 @@
             {% for item in portfolio.experience %}
             <article class="experience-item glass">
                 <div class="experience-item__header">
-                    <h3 class="job-title">{{ item.title }}</h3>
+                    <div>
+                        <h3 class="job-title">{{ item.title }}</h3>
+                        <p class="company-name">{{ item.company }}</p>
+                    </div>
                     <span class="employment-duration">{{ item.duration }}</span>
                 </div>
 
                 <div class="experience-item__company">
-                    <p class="company-name">{{ item.company }}</p>
                     <p class="location-info">{{ item.location }}</p>
                 </div>
 
@@ -200,7 +203,7 @@
 
                 <div class="experience-item__responsibilities">
                     <ul>
-                        {% for highlight in item.highlights %}
+                        {% for highlight in item.highlights[:4] %}
                         <li>{{ highlight }}</li>
                         {% endfor %}
                     </ul>
@@ -208,7 +211,7 @@
                 {% endif %}
 
                 {% if item.technologies %}
-                <div class="experience-item__tech">
+                <div class="experience-item__tech" aria-label="Technology stack">
                     {% for tech in item.technologies.split('|') %}
                     <span class="tech-badge">{{ tech.strip() }}</span>
                     {% endfor %}
@@ -220,11 +223,11 @@
     </div>
 </section>
 
-<section class="section" id="projects">
+<section class="section" id="projects" aria-labelledby="projects-heading">
     <div class="container">
         <div class="section-heading reveal">
             <span class="section-tag">Projects</span>
-            <h2>Featured Case Studies</h2>
+            <h2 id="projects-heading">Featured Case Studies</h2>
             <p></p>
             {% if session.get('admin_logged_in') %}
             <a class="section-edit-link" href="{{ url_for('dashboard') }}#projects-manager">Edit This Section</a>
@@ -253,6 +256,7 @@
                         src="{{ url_for('static', filename=project.image) if project.image else url_for('static', filename='images/project-placeholder.svg') }}"
                         alt="{{ project.title }}"
                         loading="lazy"
+                        decoding="async"
                         onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/project-placeholder.svg') }}';"
                     >
                 </div>
@@ -300,11 +304,11 @@
     </div>
 </section>
 
-<section class="section" id="certifications">
+<section class="section" id="certifications" aria-labelledby="certifications-heading">
     <div class="container">
         <div class="section-heading reveal">
             <span class="section-tag">Certifications & Achievements</span>
-            <h2>Verified Credentials</h2>
+            <h2 id="certifications-heading">Verified Credentials</h2>
             <p>Active certifications and achievement milestones managed from the admin dashboard.</p>
         </div>
 
@@ -312,11 +316,9 @@
             {% for cert in portfolio.certifications %}
             <article class="glass certification-card">
                 <div class="certification-card__media">
-                    <a class="certification-thumb-link" href="{{ url_for('static', filename=cert.image) }}" target="_blank" rel="noreferrer">
-                        <div class="certification-thumb" role="img" aria-label="{{ cert.title }} certificate thumbnail">
-                            <img src="{{ url_for('static', filename=cert.image) }}" alt="{{ cert.title }} thumbnail" loading="lazy" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/project-placeholder.svg') }}';">
-                        </div>
-                    </a>
+                    <div class="certification-thumb" role="img" aria-label="{{ cert.title }} certificate thumbnail">
+                        <img src="{{ url_for('static', filename=cert.image) }}" alt="{{ cert.title }} thumbnail" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/project-placeholder.svg') }}';">
+                    </div>
                 </div>
 
                 <div class="certification-card__body">
@@ -333,7 +335,7 @@
             </article>
             {% endfor %}
 
-            {% for achievement in portfolio.achievements %}
+            {% for achievement in portfolio.achievements[:4] %}
             <article class="glass achievement-card">
                 <span class="achievement-tag">Achievement</span>
                 <h3>{{ achievement }}</h3>
@@ -391,11 +393,11 @@
     </div>
 </section>
 
-<section class="section" id="contact">
+<section class="section" id="contact" aria-labelledby="contact-heading">
     <div class="container contact-grid">
         <div class="section-heading reveal">
             <span class="section-tag">Contact</span>
-            <h2>Let's Build Something Meaningful</h2>
+            <h2 id="contact-heading">Let's Build Something Meaningful</h2>
             <p></p>
             <div class="contact-summary glass">
                 <p><strong>Email:</strong> <a href="mailto:{{ portfolio.site.email }}">{{ portfolio.site.email }}</a></p>
