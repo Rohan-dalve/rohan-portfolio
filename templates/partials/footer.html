@@ -1,0 +1,10 @@
+<footer class="site-footer">
+    <div class="container footer-content">
+        <p>&copy; {{ current_year }} {{ site.name }}. Built with Flask, SQLite, HTML, CSS, and JavaScript.</p>
+        {% if request.path == '/' %}
+        <a href="#top" class="footer-link">Back to top</a>
+        {% else %}
+        <a href="{{ url_for('home') }}" class="footer-link">View portfolio</a>
+        {% endif %}
+    </div>
+</footer>

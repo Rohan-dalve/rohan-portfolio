@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Add Project | {{ site.name }}{% endblock %}
+{% block body_class %}admin-body{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container form-page">
+        <div class="panel-header reveal">
+            <div>
+                <span class="section-tag">Projects</span>
+                <h1>Add New Project</h1>
+            </div>
+            <a class="btn btn-secondary" href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+        </div>
+
+        <article class="glass admin-panel reveal">
+            <form class="admin-form" action="{{ url_for('add_project') }}" method="post" enctype="multipart/form-data">
+                <label>
+                    Project Title
+                    <input type="text" name="title" placeholder="Enter project title" required>
+                </label>
+                <label>
+                    Description
+                    <textarea name="description" rows="4" placeholder="Short recruiter-friendly project summary" required></textarea>
+                </label>
+                <label>
+                    Tech Stack
+                    <input type="text" name="tech_stack" placeholder="Python, Flask, SQL" required>
+                </label>
+                <label>
+                    Problem Statement
+                    <textarea name="problem_statement" rows="4" placeholder="What business or user problem does this solve?" required></textarea>
+                </label>
+                <label>
+                    Approach / Solution
+                    <textarea name="approach" rows="4" placeholder="Explain the workflow, analysis, model, or dashboard approach." required></textarea>
+                </label>
+                <label>
+                    Key Results / Impact
+                    <textarea name="impact" rows="4" placeholder="What value, insight, or impact did the project create?" required></textarea>
+                </label>
+                <label>
+                    GitHub Link
+                    <input type="url" name="github_link" placeholder="https://github.com/your-project">
+                </label>
+                <label>
+                    Project Image
+                    <input type="file" name="image" accept=".png,.jpg,.jpeg,.webp,.gif">
+                </label>
+                <button class="btn btn-primary" type="submit">Create Project</button>
+            </form>
+        </article>
+    </div>
+</section>
+{% endblock %}

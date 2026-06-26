@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ site.name }} | {{ site.role }}{% endblock %}</title>
+    <meta
+        name="description"
+        content="{{ site.name }} is a {{ site.role }} from {{ site.location }} creating data analytics, machine learning, and web solutions. Explore projects, skills, and contact information for recruiter review."
+    >
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="{{ site.name }} | {{ site.role }}">
+    <meta property="og:description" content="{{ site.name }} delivers recruiter-ready portfolio projects in data analytics, machine learning, and Flask development.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url_root }}">
+    <meta property="og:image" content="{{ url_for('static', filename='images/profile.jpg') }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ site.name }} | {{ site.role }}">
+    <meta name="twitter:description" content="Explore a professional portfolio focused on analytics, machine learning, and practical Flask solutions.">
+    <meta name="twitter:image" content="{{ url_for('static', filename='images/profile.jpg') }}">
+    <link rel="canonical" href="{{ request.url_root }}">
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "{{ site.name }}",
+            "jobTitle": "{{ site.role }}",
+            "url": "{{ request.url_root }}",
+            "sameAs": ["{{ site.github }}", "{{ site.linkedin }}"],
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "{{ site.location }}"
+            },
+            "email": "mailto:{{ site.email }}"
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    <div class="loader" id="page-loader">
+        <div class="loader__ring"></div>
+        <p>Loading portfolio...</p>
+    </div>
+
+    <div class="bg-orb bg-orb--one"></div>
+    <div class="bg-orb bg-orb--two"></div>
+
+    {% include "partials/navbar.html" %}
+
+    <main>
+        {% include "partials/flash_messages.html" %}
+        {% block content %}{% endblock %}
+    </main>
+
+    {% include "partials/footer.html" %}
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

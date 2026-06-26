@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Add Achievement | {{ site.name }}{% endblock %}
+{% block body_class %}admin-body{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="panel-header">
+            <div>
+                <span class="section-tag">Achievements</span>
+                <h2>Add Achievement</h2>
+            </div>
+            <a class="btn" href="{{ url_for('achievements_manager') }}">Back to list</a>
+        </div>
+
+        <form class="admin-form" action="{{ url_for('add_achievement') }}" method="post" enctype="multipart/form-data">
+            <label>Achievement Title<input type="text" name="title" required></label>
+            <label>Organization/Event<input type="text" name="organization"></label>
+            <label>Date<input type="date" name="achievement_date"></label>
+            <label>Achievement Image<input type="file" name="image" accept=".png,.jpg,.jpeg,.webp,.gif"></label>
+            <label>Description<textarea name="description" rows="3"></textarea></label>
+            <label>Display Order<input type="number" name="display_order" value="0"></label>
+            <label><input type="checkbox" name="status" checked> Active</label>
+            <button class="btn btn-primary" type="submit">Add Achievement</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

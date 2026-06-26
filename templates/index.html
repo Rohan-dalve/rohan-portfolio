@@ -1,0 +1,432 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero section" id="hero">
+    <div class="container hero-layout">
+        <div class="hero-copy reveal">
+            <span class="eyebrow">Open to data analytics and machine learning opportunities</span>
+            {% if session.get('admin_logged_in') %}
+            <a class="section-edit-link" href="{{ url_for('dashboard') }}#settings-manager">Edit Hero Content</a>
+            {% endif %}
+            <h1>{{ portfolio.site.name }}</h1>
+            <p class="hero-lead">{{ portfolio.site.role }}</p>
+            <p class="hero-text">{{ portfolio.site.tagline }}</p>
+
+            <div class="hero-actions">
+                <a class="btn btn-primary" href="#projects">View Projects</a>
+                <a class="btn btn-secondary" href="{{ url_for('static', filename='resume.pdf') }}" download>Download Resume</a>
+                <a class="btn btn-tertiary" href="{{ portfolio.site.linkedin }}" target="_blank" rel="noreferrer">LinkedIn Profile</a>
+            </div>
+
+            <div class="hero-meta-grid">
+                <article class="glass hero-meta-card">
+                    <span>Location</span>
+                    <strong>{{ portfolio.site.location }}</strong>
+                </article>
+                <article class="glass hero-meta-card">
+                    <span>Key Strength</span>
+                    <strong>{{ portfolio.site.resume_highlight_1 }}</strong>
+                </article>
+                <article class="glass hero-meta-card">
+                    <span>Career Focus</span>
+                    <strong>{{ portfolio.site.resume_highlight_2 }}</strong>
+                </article>
+                <article class="glass hero-meta-card">
+                    <span>Recent Outcome</span>
+                    <strong>{{ portfolio.site.resume_highlight_3 }}</strong>
+                </article>
+            </div>
+
+            <div class="hero-contact-links">
+                <a class="hero-link" href="mailto:{{ portfolio.site.email }}">{{ portfolio.site.email }}</a>
+                <a class="hero-link" href="tel:{{ portfolio.site.phone }}">{{ portfolio.site.phone }}</a>
+                <a class="hero-link" href="{{ portfolio.site.linkedin }}" target="_blank" rel="noreferrer">LinkedIn</a>
+            </div>
+        </div>
+
+        <div class="hero-visual reveal">
+            <div class="profile-frame glass">
+                <img
+                    class="profile-image"
+                    src="{{ url_for('static', filename='images/profile.jpg') }}"
+                    alt="{{ portfolio.site.name }} profile photo"
+                    loading="eager"
+                    onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/profile-placeholder.svg') }}';"
+                >
+                <div class="hero-card">
+                    <div class="hero-card__top">
+                        <span class="status-dot"></span>
+                        <span>About Me</span>
+                    </div>
+                    <p>{{ portfolio.about }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="about">
+    <div class="container">
+        <div class="section-heading reveal">
+            <span class="section-tag">About</span>
+            <h2>Professional Summary</h2>
+            <p></p>
+            {% if session.get('admin_logged_in') %}
+            <a class="section-edit-link" href="{{ url_for('dashboard') }}#about-manager">Edit This Section</a>
+            {% endif %}
+        </div>
+
+        <div class="about-grid reveal">
+            <article class="glass about-panel">
+                <h3>What I do</h3>
+                <p>{{ portfolio.about }}</p>
+            </article>
+            <div class="about-cards">
+                <article class="glass about-card">
+                    <span>Academic</span>
+                    <strong>{{ portfolio.site.role }}</strong>
+                </article>
+                <article class="glass about-card">
+                    <span>Location</span>
+                    <strong>{{ portfolio.site.location }}</strong>
+                </article>
+                <article class="glass about-card">
+                    <span>Strength</span>
+                    <strong>{{ portfolio.site.resume_highlight_1 }}</strong>
+                </article>
+                <article class="glass about-card">
+                    <span>Focus</span>
+                    <strong>{{ portfolio.site.resume_highlight_2 }}</strong>
+                </article>
+                <article class="glass about-card">
+                    <span>Impact</span>
+                    <strong>{{ portfolio.site.resume_highlight_3 }}</strong>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="what-i-do">
+    <div class="container">
+        <div class="section-heading reveal">
+            <span class="section-tag">What I Do</span>
+            <h2>How I deliver value</h2>
+            <p></p>
+            {% if session.get('admin_logged_in') %}
+            <a class="section-edit-link" href="{{ url_for('dashboard') }}#services-manager">Edit This Section</a>
+            {% endif %}
+        </div>
+        <div class="service-grid reveal">
+            {% for service in portfolio.services %}
+            <article class="glass service-card">
+                <span class="service-icon">{{ service.title[:1] }}</span>
+                <h3>{{ service.title }}</h3>
+                <p>{{ service.description }}</p>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="section" id="skills">
+    <div class="container">
+        <div class="section-heading reveal">
+            <span class="section-tag">Skills</span>
+            <h2>Technical Capabilities</h2>
+            <p></p>
+            {% if session.get('admin_logged_in') %}
+            <a class="section-edit-link" href="{{ url_for('dashboard') }}#skills-manager">Edit This Section</a>
+            {% endif %}
+        </div>
+
+        <div class="skill-categories-grid reveal">
+            {% for category in portfolio.skill_categories %}
+            <article class="glass skill-category">
+                <div class="skill-category__header">
+                    <span class="skill-category__icon">{{ category.icon }}</span>
+                    <h3>{{ category.name }}</h3>
+                </div>
+                <div class="skill-pill-grid">
+                    {% for item in category["items"] %}
+                    <span class="skill-pill">{{ item.name }}</span>
+                    {% endfor %}
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        {% if portfolio.learning %}
+        <div class="learning-panel glass reveal">
+            <div class="learning-panel__header">
+                <span class="section-tag">Learning</span>
+                <h3>Growing skills in real time</h3>
+            </div>
+            <div class="learning-pill-grid">
+                {% for item in portfolio.learning %}
+                <span class="learning-pill">{{ item.title }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<section class="section" id="experience">
+    <div class="container">
+        <div class="section-heading reveal">
+            <span class="section-tag">Experience</span>
+            <h2>Professional Experience</h2>
+            <p>Organizations, responsibilities, and measurable contributions across analytics and data-driven projects.</p>
+        </div>
+
+        <div class="experience-list reveal">
+            {% for item in portfolio.experience %}
+            <article class="experience-item glass">
+                <div class="experience-item__header">
+                    <h3 class="job-title">{{ item.title }}</h3>
+                    <span class="employment-duration">{{ item.duration }}</span>
+                </div>
+
+                <div class="experience-item__company">
+                    <p class="company-name">{{ item.company }}</p>
+                    <p class="location-info">{{ item.location }}</p>
+                </div>
+
+                {% if item.highlights %}
+                <div class="experience-item__summary">
+                    <p>{{ item.highlights[0] if item.highlights else 'Professional experience' }}</p>
+                </div>
+
+                <div class="experience-item__responsibilities">
+                    <ul>
+                        {% for highlight in item.highlights %}
+                        <li>{{ highlight }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% if item.technologies %}
+                <div class="experience-item__tech">
+                    {% for tech in item.technologies.split('|') %}
+                    <span class="tech-badge">{{ tech.strip() }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="section" id="projects">
+    <div class="container">
+        <div class="section-heading reveal">
+            <span class="section-tag">Projects</span>
+            <h2>Featured Case Studies</h2>
+            <p></p>
+            {% if session.get('admin_logged_in') %}
+            <a class="section-edit-link" href="{{ url_for('dashboard') }}#projects-manager">Edit This Section</a>
+            {% endif %}
+        </div>
+
+        <div class="projects-toolbar reveal">
+            <label class="project-search">
+                <span>Search projects</span>
+                <input id="project-search" type="search" placeholder="Search by keyword, technology, or outcome">
+            </label>
+            <div class="project-filter" role="group" aria-label="Project categories">
+                <button type="button" class="filter-button active" data-filter="all">All</button>
+                <button type="button" class="filter-button" data-filter="python">Python</button>
+                <button type="button" class="filter-button" data-filter="data analytics">Data Analytics</button>
+                <button type="button" class="filter-button" data-filter="machine learning">Machine Learning</button>
+                <button type="button" class="filter-button" data-filter="flask">Flask</button>
+            </div>
+        </div>
+
+        <div class="projects-grid reveal">
+            {% for project in portfolio.projects %}
+            <article class="project-card glass" data-search-text="{{ project.title }} {{ project.description }} {{ project.tech_stack }}" data-tags="{% set tags = [] %}{% if 'python' in project.tech_stack|lower %}python,{% endif %}{% if 'sql' in project.tech_stack|lower or 'power bi' in project.tech_stack|lower or 'excel' in project.tech_stack|lower %}data analytics,{% endif %}{% if 'machine learning' in project.tech_stack|lower or 'scikit' in project.tech_stack|lower or 'numpy' in project.tech_stack|lower or 'seaborn' in project.tech_stack|lower or 'matplotlib' in project.tech_stack|lower %}machine learning,{% endif %}{% if 'flask' in project.tech_stack|lower or 'html' in project.tech_stack|lower or 'css' in project.tech_stack|lower %}flask,{% endif %}">
+                <div class="project-card__media">
+                    <img
+                        src="{{ url_for('static', filename=project.image) if project.image else url_for('static', filename='images/project-placeholder.svg') }}"
+                        alt="{{ project.title }}"
+                        loading="lazy"
+                        onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/project-placeholder.svg') }}';"
+                    >
+                </div>
+                <div class="project-card__content">
+                    <span class="project-stack">{{ project.tech_stack }}</span>
+                    <h3>{{ project.title }}</h3>
+                    <p>{{ project.description }}</p>
+
+                    <div class="project-card__badges">
+                        {% if 'Flask' in project.tech_stack or 'flask' in project.tech_stack|lower %}
+                        <span class="project-badge">Flask</span>
+                        {% endif %}
+                        {% if 'Python' in project.tech_stack or 'python' in project.tech_stack|lower %}
+                        <span class="project-badge">Python</span>
+                        {% endif %}
+                        <span class="project-badge">Case Study</span>
+                    </div>
+
+                    <div class="project-card__actions">
+                        {% if project.github_link %}
+                        <a class="btn btn-secondary btn-small" href="{{ project.github_link }}" target="_blank" rel="noreferrer">Live Demo</a>
+                        <a class="btn btn-primary btn-small" href="{{ project.github_link }}" target="_blank" rel="noreferrer">GitHub</a>
+                        {% endif %}
+                        <button class="btn btn-tertiary btn-small case-study-toggle" type="button" data-target="case-study-{{ project.id }}">Details</button>
+                    </div>
+
+                    <div class="case-study-panel" id="case-study-{{ project.id }}">
+                        <div>
+                            <h4>Problem Statement</h4>
+                            <p>{{ project.problem_statement }}</p>
+                        </div>
+                        <div>
+                            <h4>Approach / Solution</h4>
+                            <p>{{ project.approach }}</p>
+                        </div>
+                        <div>
+                            <h4>Key Results / Impact</h4>
+                            <p>{{ project.impact }}</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="section" id="certifications">
+    <div class="container">
+        <div class="section-heading reveal">
+            <span class="section-tag">Certifications & Achievements</span>
+            <h2>Verified Credentials</h2>
+            <p>Active certifications and achievement milestones managed from the admin dashboard.</p>
+        </div>
+
+        <div class="certification-grid reveal">
+            {% for cert in portfolio.certifications %}
+            <article class="glass certification-card">
+                <div class="certification-card__media">
+                    <a class="certification-thumb-link" href="{{ url_for('static', filename=cert.image) }}" target="_blank" rel="noreferrer">
+                        <div class="certification-thumb" role="img" aria-label="{{ cert.title }} certificate thumbnail">
+                            <img src="{{ url_for('static', filename=cert.image) }}" alt="{{ cert.title }} thumbnail" loading="lazy" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/project-placeholder.svg') }}';">
+                        </div>
+                    </a>
+                </div>
+
+                <div class="certification-card__body">
+                    <h3>{{ cert.title }}</h3>
+                    <p class="text-muted">{{ cert.issuer or 'Issuer not specified' }}{% if cert.issue_date %} · {{ cert.issue_date }}{% endif %}{% if cert.category %} · {{ cert.category }}{% endif %}</p>
+                    {% if cert.description %}
+                    <p class="cert-description">{{ cert.description }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="certification-card__actions">
+                    <a class="btn btn-primary" href="{{ url_for('static', filename=cert.image) }}" target="_blank" rel="noreferrer">View Certificate</a>
+                </div>
+            </article>
+            {% endfor %}
+
+            {% for achievement in portfolio.achievements %}
+            <article class="glass achievement-card">
+                <span class="achievement-tag">Achievement</span>
+                <h3>{{ achievement }}</h3>
+                <p>Updated through the admin panel to reflect current achievements and learning milestones.</p>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="section" id="github">
+    <div class="container">
+        <div class="section-heading reveal">
+            <span class="section-tag">GitHub</span>
+            <h2>GitHub Portfolio</h2>
+            <p></p>
+        </div>
+
+        <div class="github-grid reveal">
+            <article class="glass github-card">
+                <div>
+                    <h3>GitHub Profile</h3>
+                    <p>{{ portfolio.site.github_section_text }}</p>
+                </div>
+                <a class="btn btn-primary" href="{{ portfolio.site.github }}" target="_blank" rel="noreferrer">Open GitHub Profile</a>
+            </article>
+            <article class="glass github-summary-card">
+                <div class="github-metric">
+                    <strong>{{ portfolio.github_summary.repo_count }}</strong>
+                    <span>Repos</span>
+                </div>
+                <div class="github-metric">
+                    <strong>{{ portfolio.github_summary.project_count }}</strong>
+                    <span>Projects</span>
+                </div>
+                <div class="github-metric">
+                    <strong>{{ portfolio.site.location }}</strong>
+                    <span>Based in</span>
+                </div>
+                <div class="github-languages">
+                    {% for lang in portfolio.github_summary.top_languages %}
+                    <span class="tech-chip">{{ lang }}</span>
+                    {% endfor %}
+                </div>
+            </article>
+            <article class="glass github-graph-card">
+                <h4>Contribution snapshot</h4>
+                <div class="github-graph-grid">
+                    {% for _ in range(portfolio.github_summary.contributions) %}
+                    <span class="graph-cell"></span>
+                    {% endfor %}
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="contact">
+    <div class="container contact-grid">
+        <div class="section-heading reveal">
+            <span class="section-tag">Contact</span>
+            <h2>Let's Build Something Meaningful</h2>
+            <p></p>
+            <div class="contact-summary glass">
+                <p><strong>Email:</strong> <a href="mailto:{{ portfolio.site.email }}">{{ portfolio.site.email }}</a></p>
+                <p><strong>Phone:</strong> <a href="tel:{{ portfolio.site.phone }}">{{ portfolio.site.phone }}</a></p>
+                <p><strong>Location:</strong> {{ portfolio.site.location }}</p>
+                <p><strong>LinkedIn:</strong> <a href="{{ portfolio.site.linkedin }}" target="_blank" rel="noreferrer">View profile</a></p>
+                <p><strong>GitHub:</strong> <a href="{{ portfolio.site.github }}" target="_blank" rel="noreferrer">Open profile</a></p>
+            </div>
+        </div>
+
+        <div class="glass contact-panel reveal">
+            <form class="contact-form" action="{{ url_for('contact') }}" method="post">
+                <label>
+                    Name
+                    <input type="text" name="name" placeholder="Your name" required>
+                </label>
+                <label>
+                    Email
+                    <input type="email" name="email" placeholder="your@email.com" required>
+                </label>
+                <label>
+                    Subject
+                    <input type="text" name="subject" placeholder="Project discussion" required>
+                </label>
+                <label>
+                    Message
+                    <textarea name="message" rows="5" placeholder="Tell me about your requirement..." required></textarea>
+                </label>
+                <button class="btn btn-primary" type="submit">Send Message</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

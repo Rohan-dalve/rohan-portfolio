@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Add Certificate | {{ site.name }}{% endblock %}
+{% block body_class %}admin-body{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="panel-header">
+            <div>
+                <span class="section-tag">Certifications</span>
+                <h2>Add Certificate</h2>
+            </div>
+            <a class="btn" href="{{ url_for('certifications_manager') }}">Back to list</a>
+        </div>
+
+        <form class="admin-form" action="{{ url_for('add_certification') }}" method="post" enctype="multipart/form-data">
+            <label>Certificate Title<input type="text" name="title" required></label>
+            <label>Issuing Organization<input type="text" name="issuer"></label>
+            <label>Issue Date<input type="date" name="issue_date"></label>
+            <label>Credential ID<input type="text" name="credential_id"></label>
+            <label>Verification URL<input type="url" name="verification_url"></label>
+            <label>Category<input type="text" name="category"></label>
+            <label>Certificate Image<input type="file" name="image" accept=".png,.jpg,.jpeg,.webp,.gif"></label>
+            <label>Description<textarea name="description" rows="3"></textarea></label>
+            <label>Display Order<input type="number" name="display_order" value="0"></label>
+            <label><input type="checkbox" name="status" checked> Active</label>
+            <button class="btn btn-primary" type="submit">Add Certificate</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

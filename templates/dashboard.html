@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | {{ site.name }}{% endblock %}
+{% block body_class %}admin-body{% endblock %}
+
+{% block content %}
+<section class="section dashboard-hero">
+    <div class="container dashboard-hero__content reveal">
+        <div>
+            <span class="section-tag">Admin Dashboard</span>
+            <h1>Manage Portfolio Content</h1>
+            <p>Update core profile content, recruiter-facing sections, project case studies, and media from one clean admin panel.</p>
+        </div>
+        <div class="dashboard-hero__actions">
+            <a class="btn btn-primary" href="{{ url_for('add_project') }}">Add New Project</a>
+            <a class="btn btn-secondary" href="{{ url_for('experiences_manager') }}">Experience Manager</a>
+            <a class="btn btn-secondary" href="{{ url_for('certifications_manager') }}">Certifications</a>
+            <a class="btn btn-secondary" href="{{ url_for('achievements_manager') }}">Achievements</a>
+        </div>
+    </div>
+</section>
+
+<section class="section dashboard-section" id="settings-manager">
+    <div class="container dashboard-grid">
+        <article class="glass admin-panel reveal">
+            <div class="panel-header">
+                <div>
+                    <span class="section-tag">Portfolio Identity</span>
+                    <h2>Main Details</h2>
+                </div>
+            </div>
+            <form class="admin-form" action="{{ url_for('update_settings') }}" method="post">
+                <label>Name<input type="text" name="name" value="{{ settings.name }}" required></label>
+                <label>Role<input type="text" name="role" value="{{ settings.role }}" required></label>
+                <label>Tagline<textarea name="tagline" rows="3" required>{{ settings.tagline }}</textarea></label>
+                <label>Email<input type="email" name="email" value="{{ settings.email }}" required></label>
+                <label>Phone<input type="text" name="phone" value="{{ settings.phone }}" required></label>
+                <label>GitHub URL<input type="url" name="github" value="{{ settings.github }}" required></label>
+                <label>LinkedIn URL<input type="url" name="linkedin" value="{{ settings.linkedin }}" required></label>
+                <label>Location<input type="text" name="location" value="{{ settings.location }}" required></label>
+                <label>Resume Highlight 1<textarea name="resume_highlight_1" rows="2" required>{{ settings.resume_highlight_1 }}</textarea></label>
+                <label>Resume Highlight 2<textarea name="resume_highlight_2" rows="2" required>{{ settings.resume_highlight_2 }}</textarea></label>
+                <label>Resume Highlight 3<textarea name="resume_highlight_3" rows="2" required>{{ settings.resume_highlight_3 }}</textarea></label>
+                <label>GitHub Section Title<input type="text" name="github_section_title" value="{{ settings.github_section_title }}" required></label>
+                <label>GitHub Section Text<textarea name="github_section_text" rows="3" required>{{ settings.github_section_text }}</textarea></label>
+                <button class="btn btn-primary" type="submit">Save Portfolio Settings</button>
+            </form>
+        </article>
+
+        <article class="glass admin-panel reveal">
+            <div class="panel-header">
+                <div>
+                    <span class="section-tag">Profile Image</span>
+                    <h2>Hero Profile Photo</h2>
+                </div>
+            </div>
+            <div class="current-image-preview">
+                <img src="{{ url_for('static', filename='images/profile.jpg') }}" alt="Current profile image">
+            </div>
+            <form class="admin-form" action="{{ url_for('upload_profile_image') }}" method="post" enctype="multipart/form-data">
+                <label>
+                    Upload New Profile Image
+                    <input type="file" name="profile_image" accept=".png,.jpg,.jpeg,.webp,.gif" required>
+                </label>
+                <button class="btn btn-primary" type="submit">Upload Profile Image</button>
+            </form>
+        </article>
+    </div>
+</section>
+
+<section class="section dashboard-section" id="about-manager">
+    <div class="container dashboard-grid">
+        <article class="glass admin-panel reveal">
+            <div class="panel-header">
+                <div>
+                    <span class="section-tag">About</span>
+                    <h2>Professional Summary</h2>
+                </div>
+            </div>
+            <form class="admin-form" action="{{ url_for('update_about') }}" method="post">
+                <label>
+                    About Content
+                    <textarea name="content" rows="9" required>{{ about.content if about else '' }}</textarea>
+                </label>
+                <button class="btn btn-primary" type="submit">Save About Content</button>
+            </form>
+        </article>
+
+        <article class="glass admin-panel reveal" id="skills-manager">
+            <div class="panel-header">
+                <div>
+                    <span class="section-tag">Skills</span>
+                    <h2>Manage Skill Levels</h2>
+                </div>
+            </div>
+            <form class="admin-form admin-form--inline admin-form--wide" action="{{ url_for('add_skill') }}" method="post">
+                <label>Skill Name<input type="text" name="name" placeholder="e.g. Tableau" required></label>
+                <label>Level<input type="number" name="level" min="1" max="100" placeholder="85" required></label>
+                <button class="btn btn-primary" type="submit">Add Skill</button>
+            </form>
+            <div class="admin-list">
+                {% for skill in skills %}
+                <form class="admin-list-item" action="{{ url_for('edit_skill', skill_id=skill.id) }}" method="post">
+                    <input type="text" name="name" value="{{ skill.name }}" required>
+                    <input type="number" name="level" min="1" max="100" value="{{ skill.level }}" required>
+                    <div class="admin-list-item__actions">
+                        <button class="btn btn-secondary btn-small" type="submit">Update</button>
+                        <button class="btn btn-danger btn-small js-confirm-delete" formaction="{{ url_for('delete_skill', skill_id=skill.id) }}" formmethod="post" type="submit">Delete</button>
+                    </div>
+                </form>
+                {% endfor %}
+            </div>
+        </article>
+    </div>
+</section>
+
+<section class="section dashboard-section" id="services-manager">
+    <div class="container dashboard-grid">
+        <article class="glass admin-panel reveal">
+            <div class="panel-header">
+                <div>
+                    <span class="section-tag">What I Do</span>
+                    <h2>Manage Service Cards</h2>
+                </div>
+            </div>
+            <form class="admin-form" action="{{ url_for('add_service') }}" method="post">
+                <label>Title<input type="text" name="title" placeholder="Data Cleaning" required></label>
+                <label>Description<textarea name="description" rows="3" placeholder="Short description" required></textarea></label>
+                <button class="btn btn-primary" type="submit">Add Service Card</button>
+            </form>
+        </article>
+
+        <article class="glass admin-panel reveal">
+            <div class="admin-list admin-list--stack">
+                {% for service in services %}
+                <form class="admin-list-item admin-list-item--tall" action="{{ url_for('edit_service', service_id=service.id) }}" method="post">
+                    <input type="text" name="title" value="{{ service.title }}" required>
+                    <textarea name="description" rows="3" required>{{ service.description }}</textarea>
+                    <div class="admin-list-item__actions">
+                        <button class="btn btn-secondary btn-small" type="submit">Update</button>
+                        <button class="btn btn-danger btn-small js-confirm-delete" formaction="{{ url_for('delete_service', service_id=service.id) }}" formmethod="post" type="submit">Delete</button>
+                    </div>
+                </form>
+                {% endfor %}
+            </div>
+        </article>
+    </div>
+</section>
+
+<section class="section dashboard-section" id="tools-manager">
+    <div class="container dashboard-grid">
+        <article class="glass admin-panel reveal">
+            <div class="panel-header">
+                <div>
+                    <span class="section-tag">Tools</span>
+                    <h2>Manage Tools</h2>
+                </div>
+            </div>
+            <form class="admin-form admin-form--inline" action="{{ url_for('add_tool') }}" method="post">
+                <label>Tool Name<input type="text" name="name" placeholder="e.g. Git" required></label>
+                <button class="btn btn-primary" type="submit">Add Tool</button>
+            </form>
+            <div class="admin-list">
+                {% for tool in tools %}
+                <form class="admin-list-item admin-list-item--compact" action="{{ url_for('edit_tool', tool_id=tool.id) }}" method="post">
+                    <input type="text" name="name" value="{{ tool.name }}" required>
+                    <div class="admin-list-item__actions">
+                        <button class="btn btn-secondary btn-small" type="submit">Update</button>
+                        <button class="btn btn-danger btn-small js-confirm-delete" formaction="{{ url_for('delete_tool', tool_id=tool.id) }}" formmethod="post" type="submit">Delete</button>
+                    </div>
+                </form>
+                {% endfor %}
+            </div>
+        </article>
+
+        <article class="glass admin-panel reveal" id="learning-manager">
+            <div class="panel-header">
+                <div>
+                    <span class="section-tag">Currently Learning</span>
+                    <h2>Manage Learning Topics</h2>
+                </div>
+            </div>
+            <form class="admin-form admin-form--inline" action="{{ url_for('add_learning') }}" method="post">
+                <label>Topic Title<input type="text" name="title" placeholder="e.g. Data Engineering" required></label>
+                <button class="btn btn-primary" type="submit">Add Topic</button>
+            </form>
+            <div class="admin-list">
+                {% for item in learning %}
+                <form class="admin-list-item admin-list-item--compact" action="{{ url_for('edit_learning', item_id=item.id) }}" method="post">
+                    <input type="text" name="title" value="{{ item.title }}" required>
+                    <div class="admin-list-item__actions">
+                        <button class="btn btn-secondary btn-small" type="submit">Update</button>
+                        <button class="btn btn-danger btn-small js-confirm-delete" formaction="{{ url_for('delete_learning', item_id=item.id) }}" formmethod="post" type="submit">Delete</button>
+                    </div>
+                </form>
+                {% endfor %}
+            </div>
+        </article>
+    </div>
+</section>
+
+<section class="section dashboard-section" id="projects-manager">
+    <div class="container">
+        <div class="panel-header reveal">
+            <div>
+                <span class="section-tag">Projects</span>
+                <h2>Case Study Management</h2>
+            </div>
+            <a class="btn btn-secondary" href="{{ url_for('add_project') }}">Open Add Project Form</a>
+        </div>
+
+        <div class="admin-project-grid">
+            {% for project in projects %}
+            <article class="glass admin-project-card reveal">
+                <div class="admin-project-card__image">
+                    <img
+                        src="{{ url_for('static', filename=project.image) if project.image else url_for('static', filename='images/project-placeholder.svg') }}"
+                        alt="{{ project.title }}"
+                        onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/project-placeholder.svg') }}';"
+                    >
+                </div>
+                <div class="admin-project-card__content">
+                    <span class="project-stack">{{ project.tech_stack }}</span>
+                    <h3>{{ project.title }}</h3>
+                    <p>{{ project.description }}</p>
+                    <p><strong>Problem:</strong> {{ project.problem_statement }}</p>
+                    <div class="admin-card-actions">
+                        <a class="btn btn-secondary btn-small" href="{{ url_for('edit_project', project_id=project.id) }}">Edit</a>
+                        <form action="{{ url_for('delete_project', project_id=project.id) }}" method="post">
+                            <button class="btn btn-danger btn-small js-confirm-delete" type="submit">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

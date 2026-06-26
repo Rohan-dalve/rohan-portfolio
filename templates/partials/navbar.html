@@ -1,0 +1,32 @@
+<header class="site-header" id="top">
+    <nav class="navbar container">
+        <a href="{{ url_for('home') }}#hero" class="brand">{{ site.name }}</a>
+
+        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div class="nav-links" id="nav-menu">
+            {% if request.path == '/' %}
+            <a href="#hero">Home</a>
+            <a href="#about">About</a>
+            <a href="#skills">Skills</a>
+            <a href="#experience">Experience</a>
+            <a href="#projects">Projects</a>
+            <a href="#contact">Contact</a>
+            <a class="nav-button" href="{{ url_for('static', filename='resume.pdf') }}" download>Resume</a>
+            {% elif session.get('admin_logged_in') %}
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('add_project') }}">Add Project</a>
+            <form action="{{ url_for('logout') }}" method="post" class="nav-inline-form">
+                <button type="submit" class="nav-link-button">Logout</button>
+            </form>
+            {% else %}
+            <a href="{{ url_for('home') }}#projects">Portfolio</a>
+            <a href="{{ url_for('admin_login') }}">Admin Login</a>
+            {% endif %}
+        </div>
+    </nav>
+</header>

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Achievements | {{ site.name }}{% endblock %}
+{% block body_class %}admin-body{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="panel-header">
+            <div>
+                <span class="section-tag">Achievements</span>
+                <h2>Achievement Management</h2>
+            </div>
+            <a class="btn btn-primary" href="{{ url_for('add_achievement') }}">Add Achievement</a>
+        </div>
+
+        <form method="get" class="admin-filter" action="{{ url_for('achievements_manager') }}">
+            <input type="search" name="q" value="{{ q }}" placeholder="Search achievements...">
+            <button class="btn" type="submit">Search</button>
+        </form>
+
+        <div class="admin-list">
+            {% for ach in achs %}
+            <div class="admin-list-item admin-list-item--tall">
+                <label class="admin-list-item__checkbox"><input class="bulk-checkbox" type="checkbox" data-id="{{ ach.id }}"></label>
+                <div class="admin-list-item__content">
+                    <h3>{{ ach.title }} — {{ ach.organization }}</h3>
+                    <p>{{ ach.achievement_date }}</p>
+                    <p>{{ ach.description }}</p>
+                </div>
+                <div class="admin-list-item__actions">
+                    <a class="btn btn-secondary btn-small" href="{{ url_for('edit_achievement', ach_id=ach.id) }}">Edit</a>
+                    <form id="delete-ach-{{ ach.id }}" action="{{ url_for('delete_achievement', ach_id=ach.id) }}" method="post" style="display:inline"></form>
+                    <button class="btn btn-danger btn-small js-confirm-delete" type="submit" form="delete-ach-{{ ach.id }}">Delete</button>
+                </div>
+            </div>
+            {% else %}
+            <p>No achievements found.</p>
+            {% endfor %}
+        </div>
+
+        <form id="bulk-form-achs" class="admin-bulk-actions" method="post" action="{{ url_for('achievements_bulk_action') }}">
+            <select name="action">
+                <option value="">Bulk actions</option>
+                <option value="activate">Activate</option>
+                <option value="deactivate">Deactivate</option>
+                <option value="delete">Delete</option>
+            </select>
+            <button class="btn" id="bulk-apply-achs" type="submit">Apply</button>
+        </form>
+
+        <script>
+            (function(){
+                const bulkForm = document.getElementById('bulk-form-achs');
+                bulkForm.addEventListener('submit', function(e){
+                    const boxes = Array.from(document.querySelectorAll('.bulk-checkbox'));
+                    const selected = boxes.filter(b=>b.checked).map(b=>b.dataset.id);
+                    if(selected.length === 0){
+                        e.preventDefault();
+                        alert('Please select at least one item.');
+                        return;
+                    }
+                    Array.from(bulkForm.querySelectorAll('input[name="ids"]')).forEach(n=>n.remove());
+                    selected.forEach(id=>{
+                        const inp = document.createElement('input');
+                        inp.type = 'hidden'; inp.name = 'ids'; inp.value = id;
+                        bulkForm.appendChild(inp);
+                    });
+                });
+            })();
+        </script>
+
+    </div>
+</section>
+{% endblock %}

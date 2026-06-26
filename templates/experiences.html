@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Experience Manager | {{ site.name }}{% endblock %}
+{% block body_class %}admin-body{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="panel-header experience-page-header">
+            <div>
+                <span class="section-tag">Experience</span>
+                <h2>Experience Management</h2>
+            </div>
+            <a class="btn btn-primary" href="{{ url_for('add_experience') }}">Add Experience</a>
+        </div>
+
+        <form method="get" class="experience-filter" action="{{ url_for('experiences_manager') }}">
+            <input class="experience-search" type="search" name="q" value="{{ q }}" placeholder="Search experiences...">
+            <select class="experience-sort" name="sort">
+                <option value="display_order desc, id desc" {% if sort=='display_order desc, id desc' %}selected{% endif %}>Display Order</option>
+                <option value="created_at desc" {% if sort=='created_at desc' %}selected{% endif %}>Latest</option>
+            </select>
+            <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+
+        <div class="experience-list">
+            {% for exp in experiences %}
+            <article class="glass experience-card">
+                <div class="experience-card-left">
+                    <label class="experience-card-checkbox"><input class="bulk-checkbox" type="checkbox" data-id="{{ exp.id }}"></label>
+                    <div class="experience-card-content">
+                        <div class="experience-card-title-row">
+                            <div>
+                                <h3>{{ exp.job_title }}</h3>
+                                <p class="experience-card-subtitle">{{ exp.company_name }} • {{ exp.location }}</p>
+                            </div>
+                            <span class="experience-status{% if exp.status == 1 %} experience-status--active{% else %} experience-status--inactive{% endif %}">{% if exp.status == 1 %}Active{% else %}Inactive{% endif %}</span>
+                        </div>
+                        <p class="experience-card-duration">{{ exp.start_date }} - {% if exp.current_job %}Present{% else %}{{ exp.end_date }}{% endif %}</p>
+                        <p class="experience-card-technologies">Technologies: {{ exp.technologies or 'Not specified' }}</p>
+                        <p class="experience-card-description">{{ exp.description }}</p>
+                    </div>
+                </div>
+                <div class="experience-card-actions">
+                    <a class="btn btn-secondary btn-small" href="{{ url_for('edit_experience', exp_id=exp.id) }}">Edit</a>
+                    <form id="delete-exp-{{ exp.id }}" action="{{ url_for('delete_experience', exp_id=exp.id) }}" method="post"></form>
+                    <button class="btn btn-danger btn-small js-confirm-delete" type="submit" form="delete-exp-{{ exp.id }}">Delete</button>
+                </div>
+            </article>
+            {% else %}
+            <p>No experiences found.</p>
+            {% endfor %}
+        </div>
+
+        <form id="bulk-form" class="experience-bulk-actions" method="post" action="{{ url_for('experience_bulk_action') }}">
+            <select name="action">
+                <option value="">Bulk actions</option>
+                <option value="activate">Activate</option>
+                <option value="deactivate">Deactivate</option>
+                <option value="delete">Delete</option>
+            </select>
+            <button class="btn btn-primary" id="bulk-apply" type="submit">Apply</button>
+        </form>
+
+        <script>
+            (function(){
+                const bulkForm = document.getElementById('bulk-form');
+                bulkForm.addEventListener('submit', function(e){
+                    const boxes = Array.from(document.querySelectorAll('.bulk-checkbox'));
+                    const selected = boxes.filter(b=>b.checked).map(b=>b.dataset.id);
+                    if(selected.length === 0){
+                        e.preventDefault();
+                        alert('Please select at least one item.');
+                        return;
+                    }
+                    // Remove any existing dynamic inputs
+                    Array.from(bulkForm.querySelectorAll('input[name="ids"]')).forEach(n=>n.remove());
+                    selected.forEach(id=>{
+                        const inp = document.createElement('input');
+                        inp.type = 'hidden'; inp.name = 'ids'; inp.value = id;
+                        bulkForm.appendChild(inp);
+                    });
+                });
+            })();
+        </script>
+
+    </div>
+</section>
+{% endblock %}

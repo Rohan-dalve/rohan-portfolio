@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Certifications | {{ site.name }}{% endblock %}
+{% block body_class %}admin-body{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="panel-header">
+            <div>
+                <span class="section-tag">Certifications</span>
+                <h2>Certification Management</h2>
+            </div>
+            <a class="btn btn-primary" href="{{ url_for('add_certification') }}">Add Certificate</a>
+        </div>
+
+        <form method="get" class="admin-filter" action="{{ url_for('certifications_manager') }}">
+            <input type="search" name="q" value="{{ q }}" placeholder="Search certificates...">
+            <select name="status">
+                <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All statuses</option>
+                <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+            </select>
+            <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+
+        <div class="admin-list">
+            {% for cert in certs %}
+            <div class="admin-list-item admin-list-item--tall">
+                <div class="admin-list-item__checkbox">
+                    <label><input class="bulk-checkbox" type="checkbox" data-id="{{ cert.id }}"></label>
+                </div>
+                <div class="admin-list-item__content">
+                    <div class="admin-list-item__meta">
+                        <h3>{{ cert.title }}</h3>
+                        <span class="status-pill {% if cert.status %}status-active{% else %}status-inactive{% endif %}">{% if cert.status %}Active{% else %}Inactive{% endif %}</span>
+                    </div>
+                    <p class="text-muted">{{ cert.issuer or 'Unknown issuer' }}{% if cert.issue_date %} · {{ cert.issue_date }}{% endif %}{% if cert.category %} · {{ cert.category }}{% endif %}</p>
+                    <p>{{ cert.description }}</p>
+                    {% if cert.verification_url %}
+                    <p><a class="text-link" href="{{ cert.verification_url }}" target="_blank" rel="noreferrer">View verification</a></p>
+                    {% endif %}
+                </div>
+                <div class="admin-list-item__actions">
+                    <a class="btn btn-secondary btn-small" href="{{ url_for('edit_certification', cert_id=cert.id) }}">Edit</a>
+                    <form id="delete-cert-{{ cert.id }}" action="{{ url_for('delete_certification', cert_id=cert.id) }}" method="post" style="display:inline"></form>
+                    <button class="btn btn-danger btn-small js-confirm-delete" type="submit" form="delete-cert-{{ cert.id }}">Delete</button>
+                </div>
+            </div>
+            {% else %}
+            <p>No certifications found.</p>
+            {% endfor %}
+        </div>
+
+        <form id="bulk-form-certs" class="admin-bulk-actions" method="post" action="{{ url_for('certifications_bulk_action') }}">
+            <select name="action">
+                <option value="">Bulk actions</option>
+                <option value="activate">Activate</option>
+                <option value="deactivate">Deactivate</option>
+                <option value="delete">Delete</option>
+            </select>
+            <button class="btn btn-primary" id="bulk-apply-certs" type="submit">Apply</button>
+        </form>
+
+        <script>
+            (function(){
+                const bulkForm = document.getElementById('bulk-form-certs');
+                bulkForm.addEventListener('submit', function(e){
+                    const boxes = Array.from(document.querySelectorAll('.bulk-checkbox'));
+                    const selected = boxes.filter(b=>b.checked).map(b=>b.dataset.id);
+                    if(selected.length === 0){
+                        e.preventDefault();
+                        alert('Please select at least one item.');
+                        return;
+                    }
+                    Array.from(bulkForm.querySelectorAll('input[name="ids"]')).forEach(n=>n.remove());
+                    selected.forEach(id=>{
+                        const inp = document.createElement('input');
+                        inp.type = 'hidden'; inp.name = 'ids'; inp.value = id;
+                        bulkForm.appendChild(inp);
+                    });
+                });
+            })();
+        </script>
+
+    </div>
+</section>
+{% endblock %}

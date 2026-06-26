@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Experience | {{ site.name }}{% endblock %}
+{% block body_class %}admin-body{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="panel-header">
+            <div>
+                <span class="section-tag">Experience</span>
+                <h2>Edit Experience</h2>
+            </div>
+            <a class="btn" href="{{ url_for('experiences_manager') }}">Back to list</a>
+        </div>
+
+        <form class="admin-form" action="{{ url_for('edit_experience', exp_id=exp.id) }}" method="post">
+            <label>Job Title<input type="text" name="job_title" value="{{ exp.job_title }}" required></label>
+            <label>Company Name<input type="text" name="company_name" value="{{ exp.company_name }}" required></label>
+            <label>Employment Type<input type="text" name="employment_type" value="{{ exp.employment_type }}"></label>
+            <label>Start Date<input type="date" name="start_date" value="{{ exp.start_date }}"></label>
+            <label>End Date<input type="date" name="end_date" value="{{ exp.end_date }}"></label>
+            <label><input type="checkbox" name="current_job" {% if exp.current_job %}checked{% endif %}> Currently Working</label>
+            <label>Location<input type="text" name="location" value="{{ exp.location }}"></label>
+            <label>Description<textarea name="description" rows="4">{{ exp.description }}</textarea></label>
+            <label>Key Responsibilities<textarea name="responsibilities" rows="3">{{ exp.responsibilities }}</textarea></label>
+            <label>Technologies Used<input type="text" name="technologies" value="{{ exp.technologies }}" placeholder="Comma separated"></label>
+            <label>Display Order<input type="number" name="display_order" value="{{ exp.display_order }}"></label>
+            <label><input type="checkbox" name="status" {% if exp.status %}checked{% endif %}> Active</label>
+            <button class="btn btn-primary" type="submit">Save Changes</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Project placeholder">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1a32"/>
+      <stop offset="100%" stop-color="#0a1020"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#66d7ff"/>
+      <stop offset="100%" stop-color="#2f80ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" rx="28" fill="url(#bg)"/>
+  <rect x="92" y="104" width="616" height="292" rx="18" fill="#132443" stroke="#224271" stroke-width="4"/>
+  <rect x="126" y="140" width="160" height="18" rx="9" fill="url(#accent)" opacity="0.85"/>
+  <rect x="126" y="182" width="546" height="14" rx="7" fill="#2a3c63"/>
+  <rect x="126" y="212" width="512" height="14" rx="7" fill="#2a3c63"/>
+  <rect x="126" y="252" width="170" height="96" rx="16" fill="#173056"/>
+  <rect x="320" y="252" width="170" height="96" rx="16" fill="#173056"/>
+  <rect x="514" y="252" width="124" height="96" rx="16" fill="url(#accent)" opacity="0.9"/>
+</svg>

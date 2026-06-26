@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login | {{ site.name }}{% endblock %}
+{% block body_class %}admin-body{% endblock %}
+
+{% block content %}
+<section class="section admin-auth-section">
+    <div class="container admin-auth-wrapper">
+        <div class="admin-auth-intro reveal">
+            <span class="section-tag">Admin Panel</span>
+            <h1>Secure Portfolio Management</h1>
+            <p>Log in to manage projects, update your about section, maintain skills, and upload project images without editing source code.</p>
+        </div>
+
+        <div class="glass admin-auth-card reveal">
+            <h2>Admin Login</h2>
+            <form class="admin-form" action="{{ url_for('admin_login') }}" method="post">
+                <label>
+                    Username
+                    <input type="text" name="username" placeholder="Enter admin username" required>
+                </label>
+                <label>
+                    Password
+                    <input type="password" name="password" placeholder="Enter admin password" required>
+                </label>
+                <button class="btn btn-primary btn-full" type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
